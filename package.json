@@ -17,6 +17,7 @@
     "express": "^4.17.3"
   },
   "devDependencies": {
+    "dotenv": "^16.0.0",
     "nodemon": "^2.0.15"
   }
 }
