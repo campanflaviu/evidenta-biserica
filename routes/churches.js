@@ -1,9 +1,11 @@
 const express = require('express');
-const router = express.Router();
 const Church = require('../models/church');
+
+const router = express.Router();
 
 router
   .route('/')
+  // get all churches
   .get(async (req, res) => {
     try {
       const churches = await Church.find();
@@ -12,6 +14,7 @@ router
       res.json({ error: 'error' });
     }
   })
+  // add a new church
   .post(async (req, res) => {
     const church = new Church({
       name: req.body.name,
@@ -23,12 +26,13 @@ router
       res.status(200).json({ status: 'ok' });
     } catch (e) {
       console.error(e);
-      res.json({ error: 'error' });
+      res.json({ error: e.message });
     }
   });
 
 router
   .route('/:id')
+  // get a church by id
   .get(async (req, res) => {
     try {
       const church = await Church.findById(req.params.id);
@@ -42,6 +46,7 @@ router
       res.status(404).json({ error: e.message });
     }
   })
+  // delete a church by id
   .delete(async (req, res) => {
     try {
       await Church.findByIdAndDelete(req.params.id);
@@ -51,6 +56,7 @@ router
       res.json({ error: e.message });
     }
   })
+  // update a church by id
   .patch(async (req, res) => {
     try {
       const updatedChurch = await Church.findByIdAndUpdate(req.params.id, req.body, { new: true });

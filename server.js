@@ -8,6 +8,9 @@ const mongoose = require('mongoose');
 const morgan = require('morgan');
 const chalk = require('chalk');
 
+const churchesRouter = require('./routes/churches');
+const membersRouter = require('./routes/members');
+
 // setup express
 const app = express();
 app.use(express.json());
@@ -37,9 +40,11 @@ db.on('open', () => console.log('connected to mongo'));
 
 
 // routing
-const churchesRouter = require('./routes/churches');
 app.use('/churches', churchesRouter);
+app.use('/members', membersRouter);
 
 
 // start app on port
-app.listen(process.env.PORT || 5000); 
+const port = process.env.PORT || 5000
+console.log(`started app on port ${port}`);
+app.listen(port);
