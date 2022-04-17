@@ -1,3 +1,7 @@
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').load()
+}
+
 const express = require('express');
 
 const app = express();
@@ -8,4 +12,4 @@ const bisericiRouter = require('./routes/biserici');
 app.use('/biserici', bisericiRouter);
 
 
-app.listen(3005);
+app.listen(3000);
