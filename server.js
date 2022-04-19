@@ -7,6 +7,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const chalk = require('chalk');
+const cors = require("cors");
 
 const churchesRouter = require('./routes/churches');
 const membersRouter = require('./routes/members');
@@ -14,6 +15,18 @@ const membersRouter = require('./routes/members');
 // setup express
 const app = express();
 app.use(express.json());
+const whitelist = ["http://localhost:3000"]
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error("Not allowed by CORS"))
+    }
+  },
+  credentials: true,
+}
+app.use(cors(corsOptions));
 
 // requests coloring
 const morganMiddleware = morgan((tokens, req, res) => {
