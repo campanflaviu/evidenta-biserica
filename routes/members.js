@@ -1,50 +1,9 @@
 const express = require('express');
-const multer = require('multer');
-const cloudinary = require('cloudinary');
 const path = require('path');
+const { uploadMedia, removeMedia } = require('../services/mediaService');
 const Member = require('../models/member');
 
 const router = express.Router();
-cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-const upload = multer({
-  // this saves the image in local file system
-  // storage: multer.diskStorage({
-  //   destination: (req, file, callback) => {
-  //     callback(null, path.join('public', Member.imageBasePath));
-  //   },
-  //   filename: (req, file, callback) => {
-  //   // set filename as unix timestamp + existing filename
-  //     callback(null, `${Date.now()}.${file.mimetype.split('image/').join('')}`);
-  //   },
-  // }),
-  // this doesn't save the file, but prepares it for cloudinary
-  storage: multer.diskStorage({}),
-  fileFilter: (req, file, callback) => {
-    callback(null, ['image/jpeg', 'image/png'].includes(file.mimetype));
-  }
-});
-
-const getMemberData = async (req) => {
-  let hasFile = !!req.file;
-  let memberData = req.body;
-  // TODO add date and other needed fields
-
-  // make member image optional
-  if (hasFile) {
-    const result = await cloudinary.uploader.upload(req.file.path);
-    memberData = {
-      ...memberData,
-      profileImage: result.secure_url,
-      cloudinaryId: result.public_id,
-    }
-  }
-  return memberData;
-};
 
 router
   .route('/')
@@ -58,12 +17,15 @@ router
     }
   })
   // add a new memmber
-  .post(upload.single('profile_image'), async (req, res) => {
-
+  .post(uploadMedia.single('profile_image'), async (req, res) => {
     try {
-      const member = new Member(await getMemberData(req));
+      const member = new Member({
+        ...req.body,
+        imagePath: req.file?.imagePath || null,
+        imageId: req.file?.imageId || null,
+      });
       const newMember = await member.save();
-      res.status(200).json({ status: 'ok' });
+      res.status(200).json({ ...newMember?._doc });
     } catch (e) {
       console.error(e);
       res.json({ error: e.message });
@@ -90,7 +52,11 @@ router
   .delete(async (req, res) => {
     try {
       const member = await Member.findById(req.params.id);
-      await cloudinary.uploader.destroy(member.cloudinaryId);
+      // remove cloudinary reference if present
+      if (member.imageId) {
+        // await cloudinary.uploader.destroy(member.cloudinaryId);
+        await removeMedia(member.imageId);
+      }
       await member.remove();
 
       res.json({ status: 'ok' });
@@ -100,9 +66,14 @@ router
     }
   })
   // update a memmber by id
-  .patch(upload.single('profile_image'), async (req, res) => {
+  .patch(uploadMedia.single('profile_image'), async (req, res) => {
     try {
-      const memberData = await getMemberData(req);
+      // TODO handle image update: it should remove the old one and upload new
+      const memberData = {
+        ...req.body,
+        imagePath: req.file?.imagePath || null,
+        imageId: req.file?.imageId || null,
+      };
       const updatedMember = await Member.findByIdAndUpdate(req.params.id, memberData, { new: true });
       res.json(updatedMember);
     } catch (e) {

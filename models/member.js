@@ -14,8 +14,8 @@ const memberSchema = new mongoose.Schema({
   },
   address: String,
   registerDate: Date,
-  profileImage: String,
-  cloudinaryId: String,
+  imagePath: String,
+  imageId: String,
   church: {
     type: mongoose.Schema.Types.ObjectId,
     ref: church

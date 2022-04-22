@@ -56,6 +56,11 @@ db.on('open', () => console.log('connected to mongo'));
 app.use('/churches', churchesRouter);
 app.use('/members', membersRouter);
 
+// generic error handling
+app.use((err, req, res, next) => {
+  res.status(500).json({ 'error': err });
+});
+
 
 // start app on port
 const port = process.env.PORT || 5000
