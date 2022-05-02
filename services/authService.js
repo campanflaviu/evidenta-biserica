@@ -4,15 +4,15 @@ const auth = require('../services/jwt');
 
 const login = async ({ email, password }) => {
   const user = await User.findOne({ email });
-  
-  if (bcrypt.compareSync(password, user.password)) {
-    const token = auth.generateAccessToken(email);
-    console.log('login user', token);
 
-    return { ...user.toJSON(), token };
-  } else {
-    console.log('doesnt match');
-  }
+  return new Promise((resolve, reject) => {
+    if (user && bcrypt.compareSync(password, user.password)) {
+      const token = auth.generateAccessToken(email);
+      resolve({ ...user.toJSON(), token });
+    } else {
+      reject(401);
+    }
+  });
 };
 
 const register = async (params) => {

@@ -12,26 +12,32 @@ router
     try {
       const members = await Member.find();
       res.json(members);
-    } catch {
-      res.json({ error: 'error' });
+    } catch (e) {
+      res.status(500).json({ error: e.message });
     }
   })
   // add a new memmber
   .post(uploadMedia.single('profile_image'), async (req, res) => {
     try {
-      const member = new Member({
-        ...req.body,
-        imagePath: req.file?.imagePath || null,
-        imageId: req.file?.imageId || null,
-      });
-      const newMember = await member.save();
-      res.status(200).json({ ...newMember?._doc });
+      if (req.body.firstName?.length && req.body.lastName?.length) {
+        const member = new Member({
+          ...req.body,
+          imagePath: req.file?.imagePath || null,
+          imageId: req.file?.imageId || null,
+        });
+        const newMember = await member.save();
+        res.status(200).json({ ...newMember?._doc });
+      } else {
+        res.sendStatus(400);
+      }
     } catch (e) {
       console.error(e);
-      res.json({ error: e.message });
+      res.status(500).json({ error: e.message });
     }
   });
 
+
+// TODO - error handling
 router
   .route('/:id')
   // get a member by id

@@ -7,13 +7,15 @@ const router = express.Router();
 
 router
   .route('/login')
-  .post((req, res) => {
+  .post(async (req, res) => {
     const { email, password } = req.body;
-    authService.login({ email, password })
-      .then(user => res.json(user))
-      .catch(err => res.status(500).json({ err: err }));
+    try {
+      const user = await authService.login({ email, password });
+      res.json(user);
+    } catch (statusCode) {
+      res.sendStatus(typeof statusCode === 'number' ? statusCode : 500);
+    }
   });
-
 
 router
   .route('/register')

@@ -1,5 +1,6 @@
 const express = require('express');
 const Church = require('../models/church');
+const mongoose = require('mongoose');
 
 const router = express.Router();
 
@@ -10,23 +11,27 @@ router
     try {
       const churches = await Church.find();
       res.json(churches);
-    } catch {
-      res.json({ error: 'error' });
+    } catch (e) {
+      res.status(500).json({ error: e.message });
     }
   })
   // add a new church
   .post(async (req, res) => {
-    const church = new Church({
-      name: req.body.name,
-      address: req.body.address,
-    });
-
-    try {
-      const newChurch = await church.save();
-      res.status(200).json({ status: 'ok' });
-    } catch (e) {
-      console.error(e);
-      res.json({ error: e.message });
+    if (req.body.name?.length && req.body.address?.length) {
+      const church = new Church({
+        name: req.body.name,
+        address: req.body.address,
+      });
+  
+      try {
+        const newChurch = await church.save();
+        res.sendStatus(204);
+      } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: e.message });
+      }
+    } else {
+      res.sendStatus(400); // bad request
     }
   });
 
@@ -35,35 +40,52 @@ router
   // get a church by id
   .get(async (req, res) => {
     try {
-      const church = await Church.findById(req.params.id);
-      if (!church) {
-        res.status(404).json({ status: 'Church not found'})
+      if (mongoose.Types.ObjectId.isValid(req.params.id)) {
+        const church = await Church.findById(req.params.id);
+        if (!church) {
+          res.sendStatus(404);
+        } else {
+          res.json(church);
+        }
       } else {
-        res.json(church);
+        res.sendStatus(404);
       }
     } catch (e) {
-      console.error(e);
-      res.status(404).json({ error: e.message });
+      res.status(500).json({ error: e.message });
     }
   })
   // delete a church by id
   .delete(async (req, res) => {
     try {
-      await Church.findByIdAndDelete(req.params.id);
-      res.json({ status: 'ok' });
+      if (mongoose.Types.ObjectId.isValid(req.params.id)) {
+        const resource = await Church.findByIdAndDelete(req.params.id);
+        console.log(res);
+        if (resource) {
+          res.sendStatus(204);
+        } else {
+          // already deleted
+          res.sendStatus(404);
+        }
+      } else {
+        // resource doesn't exist
+        res.sendStatus(404);
+      }
     } catch (e) {
-      console.error(e);
-      res.json({ error: e.message });
+      res.status(500).json({ error: e.message });
     }
   })
   // update a church by id
   .patch(async (req, res) => {
     try {
-      const updatedChurch = await Church.findByIdAndUpdate(req.params.id, req.body, { new: true });
-      res.json(updatedChurch);
+      if (mongoose.Types.ObjectId.isValid(req.params.id)) {
+        const updatedChurch = await Church.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        res.json(updatedChurch);
+      } else {
+        res.sendStatus(404);
+      }
     } catch (e) {
       console.error(e);
-      res.json({ error: e.message });      
+      res.status(500).json({ error: e.message });      
     }
   });
 
