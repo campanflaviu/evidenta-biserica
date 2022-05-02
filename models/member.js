@@ -26,6 +26,7 @@ const memberSchema = new mongoose.Schema({
   registerDate: Date,
   imagePath: String,
   imageId: String,
+  baptiseDate: Date,
   church: {
     type: mongoose.Schema.Types.ObjectId,
     ref: church
