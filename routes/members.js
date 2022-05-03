@@ -18,7 +18,7 @@ router
     }
   })
   // add a new memmber
-  .post(uploadMedia.single('profile_image'), async (req, res) => {
+  .post(uploadMedia.single('profileImage'), async (req, res) => {
     try {
       if (req.body.firstName?.length && req.body.lastName?.length) {
         const member = new Member({
@@ -71,7 +71,7 @@ router
     }
   })
   // update a memmber by id
-  .patch(checkValidId, uploadMedia.single('profile_image'), async (req, res) => {
+  .patch(checkValidId, uploadMedia.single('profileImage'), async (req, res) => {
     try {
       // we should check if there is an image uploaded, so we should delete it after we replace it
       const member = await Member.findById(req.params.id);
