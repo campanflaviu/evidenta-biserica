@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const { uploadMedia, removeMedia } = require('../services/mediaService');
 const Member = require('../models/member');
+const checkValidId = require('../utils/checkValidId');
 
 const router = express.Router();
 
@@ -37,25 +38,24 @@ router
   });
 
 
-// TODO - error handling
 router
   .route('/:id')
   // get a member by id
-  .get(async (req, res) => {
+  .get(checkValidId, async (req, res) => {
     try {
       const member = await Member.findById(req.params.id);
       if (!member) {
-        res.status(404).json({ status: 'Member not found'})
+        res.sendStatus(404);
       } else {
         res.json(member);
       }
     } catch (e) {
       console.error(e);
-      res.status(404).json({ error: e.message });
+      res.status(500).json({ error: e.message });
     }
   })
   // delete a member by id
-  .delete(async (req, res) => {
+  .delete(checkValidId, async (req, res) => {
     try {
       const member = await Member.findById(req.params.id);
       // remove cloudinary reference if present
@@ -64,17 +64,21 @@ router
         await removeMedia(member.imageId);
       }
       await member.remove();
-
-      res.json({ status: 'ok' });
+      res.sendStatus(204);
     } catch (e) {
       console.error(e);
       res.json({ error: e.message });
     }
   })
   // update a memmber by id
-  .patch(uploadMedia.single('profile_image'), async (req, res) => {
+  .patch(checkValidId, uploadMedia.single('profile_image'), async (req, res) => {
     try {
-      // TODO handle image update: it should remove the old one and upload new
+      // we should check if there is an image uploaded, so we should delete it after we replace it
+      const member = await Member.findById(req.params.id);
+      if (member.imageId) {
+        await removeMedia(member.imageId);
+      }
+
       const memberData = {
         ...req.body,
         imagePath: req.file?.imagePath || null,

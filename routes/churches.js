@@ -1,6 +1,7 @@
 const express = require('express');
-const Church = require('../models/church');
 const mongoose = require('mongoose');
+const Church = require('../models/church');
+const checkValidId = require('../utils/checkValidId');
 
 const router = express.Router();
 
@@ -38,36 +39,27 @@ router
 router
   .route('/:id')
   // get a church by id
-  .get(async (req, res) => {
+  .get(checkValidId, async (req, res) => {
     try {
-      if (mongoose.Types.ObjectId.isValid(req.params.id)) {
-        const church = await Church.findById(req.params.id);
-        if (!church) {
-          res.sendStatus(404);
-        } else {
-          res.json(church);
-        }
-      } else {
+      const church = await Church.findById(req.params.id);
+      if (!church) {
         res.sendStatus(404);
+      } else {
+        res.json(church);
       }
     } catch (e) {
       res.status(500).json({ error: e.message });
     }
   })
   // delete a church by id
-  .delete(async (req, res) => {
+  .delete(checkValidId, async (req, res) => {
     try {
-      if (mongoose.Types.ObjectId.isValid(req.params.id)) {
-        const resource = await Church.findByIdAndDelete(req.params.id);
-        console.log(res);
-        if (resource) {
-          res.sendStatus(204);
-        } else {
-          // already deleted
-          res.sendStatus(404);
-        }
+      const resource = await Church.findByIdAndDelete(req.params.id);
+      console.log(res);
+      if (resource) {
+        res.sendStatus(204);
       } else {
-        // resource doesn't exist
+        // already deleted
         res.sendStatus(404);
       }
     } catch (e) {
@@ -75,14 +67,10 @@ router
     }
   })
   // update a church by id
-  .patch(async (req, res) => {
+  .patch(checkValidId, async (req, res) => {
     try {
-      if (mongoose.Types.ObjectId.isValid(req.params.id)) {
-        const updatedChurch = await Church.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        res.json(updatedChurch);
-      } else {
-        res.sendStatus(404);
-      }
+      const updatedChurch = await Church.findByIdAndUpdate(req.params.id, req.body, { new: true });
+      res.json(updatedChurch);
     } catch (e) {
       console.error(e);
       res.status(500).json({ error: e.message });      

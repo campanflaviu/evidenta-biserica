@@ -16,11 +16,12 @@ CloudinaryStorage.prototype._handleFile = function _handleFile(req, file, cb) {
       (err, result) => {
         if (err) {
           cb(err);
+        } else {
+          cb(null, {
+            imagePath: result.secure_url,
+            imageId: result.public_id,
+          });
         }
-        cb(null, {
-          imagePath: result.secure_url,
-          imageId: result.public_id,
-        });
       }
     );
     file.stream.pipe(uploadStream);
