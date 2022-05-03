@@ -65,7 +65,10 @@ app.use(morganMiddleware);
 mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true });
 const db = mongoose.connection;
 db.on('error', err => console.error(err));
-db.on('open', () => console.log('connected to mongo'));
+db.on('open', () => {
+  console.log('connected to mongo');
+  console.log('ready...')
+});
 
 
 // routing
