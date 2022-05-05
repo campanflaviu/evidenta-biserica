@@ -76,7 +76,6 @@ router
       // we should check if there is an image uploaded, so we should delete it after we replace it
       const member = await Member.findById(req.params.id);
       let memberData = req.body;
-      console.log('should update the image with ', req.file, req.params.profileImage);
       if (req.file?.imagePath && req.file?.imageId) {
         await removeMedia(member.imageId);
         memberData = {
