@@ -1,17 +1,16 @@
 import express, { Request, Response } from 'express';
+import swaggerUI from 'swagger-ui-express';
+import mongoose from 'mongoose';
+import morgan from 'morgan';
+import chalk from 'chalk';
+import cors from 'cors';
+// import unless from 'express-unless';
 
 // setup env config
 if (process.env.NODE_ENV !== 'production') {
   // eslint-disable-next-line global-require
   require('dotenv').config();
 }
-
-const mongoose = require('mongoose');
-const morgan = require('morgan');
-const chalk = require('chalk');
-const cors = require('cors');
-// const unless = require('express-unless');
-const swaggerUI = require('swagger-ui-express');
 
 const docs = require('./docs');
 
@@ -28,7 +27,7 @@ app.use(express.json());
 // cors setup
 // TODO make sure this works on prod domain also
 const corsOptions = {
-  origin: [`http://localhost:${process.env.PORT || 5000}`],
+  // origin: [`http://localhost:${process.env.PORT || 5000}`],
   credentials: true,
 };
 app.use(cors(corsOptions));
@@ -54,11 +53,11 @@ app.use(morganMiddleware);
 //   path: [
 //     { url: '/auth/login', methods: ['POST'] },
 //     { url: '/auth/register', methods: ['POST'] },
-//   ]
+//   ],
 // }));
 
 // mongo db connection
-mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true });
+mongoose.connect(process.env.DATABASE_URL || '');
 const db = mongoose.connection;
 db.on('error', (err: any) => console.error(err));
 db.on('open', () => {
