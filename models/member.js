@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const church = require('./church');
+const relation = require('./relation');
 
 const memberSchema = new mongoose.Schema({
   address: String,
@@ -34,6 +35,17 @@ const memberSchema = new mongoose.Schema({
   hsBaptisePlace: String,
   memberDate: Date,
   details: String,
+  relations: [{
+    relation: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: relation,
+      required: true,
+    },
+    isOwner: {
+      type: Boolean,
+      default: true,
+    }
+  }],
   church: {
     type: mongoose.Schema.Types.ObjectId,
     ref: church
@@ -45,6 +57,13 @@ memberSchema.set('toJSON', {
     returnedObject.id = returnedObject._id.toString();
     delete returnedObject._id;
     delete returnedObject.__v;
+
+    // remove relation owner - not needed on FE since it's tied to it's owner
+    returnedObject.relations = returnedObject.relations.map(rel => {
+      delete rel.relation.owner;
+      rel = rel.relation;
+      return rel;
+    })
   }
 });
 

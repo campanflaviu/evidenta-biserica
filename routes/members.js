@@ -3,6 +3,7 @@ const path = require('path');
 const { uploadMedia, removeMedia } = require('../services/mediaService');
 const Member = require('../models/member');
 const checkValidId = require('../utils/checkValidId');
+const updateRelation = require('../utils/updateRelation');
 
 const router = express.Router();
 
@@ -43,10 +44,25 @@ router
   // get a member by id
   .get(checkValidId, async (req, res) => {
     try {
-      const member = await Member.findById(req.params.id);
+      const member = await Member.findById(req.params.id).populate({
+        path: 'relations',
+        populate: {
+          path: 'relation',
+          model: 'Relation',
+          // select: '-owner' // exclude owner field (since we might have switched it) - not used since we use the owner for calculations
+          // I don't think this is needed since we already have the list on FE
+          // populate: {
+          //   path: 'owner',
+          //   select: 'firstName lastName',
+          //   model: 'Member'
+          // }
+        }
+      });
       if (!member) {
         res.sendStatus(404);
       } else {
+        // update relationship type
+        member.relations = member.relations.map(updateRelation);
         res.json(member);
       }
     } catch (e) {
@@ -60,7 +76,6 @@ router
       const member = await Member.findById(req.params.id);
       // remove cloudinary reference if present
       if (member.imageId) {
-        // await cloudinary.uploader.destroy(member.cloudinaryId);
         await removeMedia(member.imageId);
       }
       await member.remove();

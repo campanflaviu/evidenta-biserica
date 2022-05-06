@@ -16,6 +16,7 @@ const churchesRouter = require('./routes/churches');
 const membersRouter = require('./routes/members');
 const authRouter = require('./routes/auth');
 const usersRouter = require('./routes/users');
+const relationsRouter = require('./routes/relations');
 
 // setup express
 const app = express();
@@ -76,6 +77,7 @@ app.use('/churches', churchesRouter);
 app.use('/members', membersRouter);
 app.use('/auth', authRouter);
 app.use('/users', usersRouter);
+app.use('/relations', relationsRouter);
 
 // generic error handling - should be enabled in production
 // app.use(async (err, req, res, next) => {
