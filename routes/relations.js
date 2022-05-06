@@ -29,7 +29,6 @@ router
 
         // add relation to owner
         const owner = await Member.findById({ _id: req.body.owner });
-        console.log('owner', owner.relations);
         owner.relations.push({
           relation,
           isOwner: true,

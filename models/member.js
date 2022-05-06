@@ -1,6 +1,4 @@
 const mongoose = require('mongoose');
-const church = require('./church');
-const relation = require('./relation');
 
 const memberSchema = new mongoose.Schema({
   address: String,
@@ -38,7 +36,7 @@ const memberSchema = new mongoose.Schema({
   relations: [{
     relation: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: relation,
+      ref: 'Relation',
       required: true,
     },
     isOwner: {
@@ -48,7 +46,7 @@ const memberSchema = new mongoose.Schema({
   }],
   church: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: church
+    ref: 'Church'
   },
 });
 

@@ -1,15 +1,14 @@
 const mongoose = require('mongoose');
-const member = require('./member');
 
 const relationSchema = new mongoose.Schema({
   owner: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: member,
+    ref: 'Member',
     required: true,
   },
   person: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: member,
+    ref: 'Member',
     required: true,
   },
   type: {
