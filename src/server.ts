@@ -1,10 +1,11 @@
+import express, { Request, Response } from 'express';
+
 // setup env config
 if (process.env.NODE_ENV !== 'production') {
   // eslint-disable-next-line global-require
   require('dotenv').config();
 }
 
-const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const chalk = require('chalk');
@@ -26,21 +27,14 @@ app.use(express.json());
 
 // cors setup
 // TODO make sure this works on prod domain also
-const whitelist = [`http://localhost:${process.env.PORT || 5000}`];
 const corsOptions = {
-  origin(origin, callback) {
-    if (!origin || whitelist.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: [`http://localhost:${process.env.PORT || 5000}`],
   credentials: true,
 };
 app.use(cors(corsOptions));
 
 // requests coloring
-const morganMiddleware = morgan((tokens, req, res) => [
+const morganMiddleware = morgan((tokens:any, req:Request, res:Response) => [
   // '\n\n\n',
   chalk.hex('#34ace0').bold(tokens.method(req, res)),
   chalk.hex('#ffb142').bold(tokens.status(req, res)),
@@ -66,7 +60,7 @@ app.use(morganMiddleware);
 // mongo db connection
 mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true });
 const db = mongoose.connection;
-db.on('error', (err) => console.error(err));
+db.on('error', (err: any) => console.error(err));
 db.on('open', () => {
   console.log('connected to mongo');
   console.log('ready...');
