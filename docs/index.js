@@ -5,9 +5,9 @@ const tags = require('./tags');
 const auth = require('./auth');
 
 module.exports = {
-    ...basicInfo,
-    ...servers,
-    ...definitions,
-    ...tags,
-    ...auth
+  ...basicInfo,
+  ...servers,
+  ...definitions,
+  ...tags,
+  ...auth,
 };

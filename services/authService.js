@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
-const auth = require('../services/jwt');
+const auth = require('./jwt');
 
 const login = async ({ email, password }) => {
   const user = await User.findOne({ email });
@@ -10,6 +10,8 @@ const login = async ({ email, password }) => {
       const token = auth.generateAccessToken(email);
       resolve({ ...user.toJSON(), token });
     } else {
+      // TODO fix this linting error
+      // eslint-disable-next-line prefer-promise-reject-errors
       reject(401);
     }
   });

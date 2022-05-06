@@ -1,5 +1,4 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const Church = require('../models/church');
 const checkValidId = require('../utils/checkValidId');
 
@@ -23,12 +22,11 @@ router
         name: req.body.name,
         address: req.body.address,
       });
-  
+
       try {
-        const newChurch = await church.save();
+        await church.save();
         res.sendStatus(204);
       } catch (e) {
-        console.error(e);
         res.status(500).json({ error: e.message });
       }
     } else {
@@ -55,7 +53,6 @@ router
   .delete(checkValidId, async (req, res) => {
     try {
       const resource = await Church.findByIdAndDelete(req.params.id);
-      console.log(res);
       if (resource) {
         res.sendStatus(204);
       } else {
@@ -72,8 +69,7 @@ router
       const updatedChurch = await Church.findByIdAndUpdate(req.params.id, req.body, { new: true });
       res.json(updatedChurch);
     } catch (e) {
-      console.error(e);
-      res.status(500).json({ error: e.message });      
+      res.status(500).json({ error: e.message });
     }
   });
 

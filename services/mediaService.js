@@ -8,26 +8,24 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const storage = cloudinaryStorageEngine({ cloudinary: cloudinary });
+const storage = cloudinaryStorageEngine({ cloudinary });
 
 const uploadMedia = multer({
-  storage: storage,
+  storage,
   fileFilter: (req, file, callback) => {
     callback(null, ['image/jpeg', 'image/png'].includes(file.mimetype));
-  }
+  },
 });
 
 const removeMedia = async (fileId) => {
-  console.log(fileId);
   // TODO better error handling here. Maybe use this as a middleware?
   try {
     const res = await cloudinary.uploader.destroy(fileId);
     console.log('remove res', res);
-
   } catch (e) {
     console.log('error', e);
   }
-}
+};
 
 module.exports = {
   uploadMedia,

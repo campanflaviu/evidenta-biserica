@@ -1,5 +1,4 @@
 const express = require('express');
-const path = require('path');
 const { uploadMedia, removeMedia } = require('../services/mediaService');
 const Member = require('../models/member');
 const checkValidId = require('../utils/checkValidId');
@@ -28,16 +27,15 @@ router
           imageId: req.file?.imageId || null,
         });
         const newMember = await member.save();
+        // eslint-disable-next-line no-underscore-dangle
         res.status(200).json({ ...newMember?._doc });
       } else {
         res.sendStatus(400);
       }
     } catch (e) {
-      console.error(e);
       res.status(500).json({ error: e.message });
     }
   });
-
 
 router
   .route('/:id')
@@ -49,14 +47,15 @@ router
         populate: {
           path: 'relation',
           model: 'Relation',
-          // select: '-owner' // exclude owner field (since we might have switched it) - not used since we use the owner for calculations
+          // select: '-owner' // exclude owner field (since we might have switched it)
+          // - not used since we use the owner for calculations
           // I don't think this is needed since we already have the list on FE
           // populate: {
           //   path: 'owner',
           //   select: 'firstName lastName',
           //   model: 'Member'
           // }
-        }
+        },
       });
       if (!member) {
         res.sendStatus(404);
@@ -66,7 +65,6 @@ router
         res.json(member);
       }
     } catch (e) {
-      console.error(e);
       res.status(500).json({ error: e.message });
     }
   })
@@ -81,7 +79,6 @@ router
       await member.remove();
       res.sendStatus(204);
     } catch (e) {
-      console.error(e);
       res.json({ error: e.message });
     }
   })
@@ -96,15 +93,16 @@ router
         memberData = {
           ...req.body,
           imagePath: req.file.imagePath,
-          imageId: req.file.imageId,  
-        }
+          imageId: req.file.imageId,
+        };
       }
 
-      const updatedMember = await Member.findByIdAndUpdate(req.params.id, memberData, { new: true });
+      const updatedMember = await Member.findByIdAndUpdate(req.params.id, memberData, {
+        new: true,
+      });
       res.json(updatedMember);
     } catch (e) {
-      console.error(e);
-      res.json({ error: e.message });      
+      res.json({ error: e.message });
     }
   });
 

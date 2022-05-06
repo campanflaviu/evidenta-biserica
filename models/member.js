@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 const mongoose = require('mongoose');
 
 const memberSchema = new mongoose.Schema({
@@ -32,7 +33,6 @@ const memberSchema = new mongoose.Schema({
   hsBaptiseDate: Date,
   hsBaptisePlace: String,
   memberDate: Date,
-  details: String,
   relations: [{
     relation: {
       type: mongoose.Schema.Types.ObjectId,
@@ -42,27 +42,31 @@ const memberSchema = new mongoose.Schema({
     isOwner: {
       type: Boolean,
       default: true,
-    }
+    },
   }],
   church: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Church'
+    ref: 'Church',
   },
 });
 
 memberSchema.set('toJSON', {
   transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString();
-    delete returnedObject._id;
-    delete returnedObject.__v;
+    const currentObj = returnedObject;
+    currentObj.id = currentObj._id.toString();
+    delete currentObj._id;
+    delete currentObj.__v;
 
     // remove relation owner - not needed on FE since it's tied to it's owner
-    returnedObject.relations = returnedObject.relations.map(rel => {
-      delete rel.relation.owner;
-      rel = rel.relation;
-      return rel;
-    })
-  }
+    currentObj.relations = currentObj.relations.map((rel) => {
+      let currentRel = rel;
+      delete currentRel.relation.owner;
+      currentRel = currentRel.relation;
+      return currentRel;
+    });
+
+    return currentObj;
+  },
 });
 
 module.exports = mongoose.model('Member', memberSchema);

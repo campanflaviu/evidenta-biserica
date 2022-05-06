@@ -7,13 +7,11 @@ const getById = async (id) => {
 
 const deleteById = async (id) => {
   const user = await User.findById(id);
-  return await member.remove();
+  return user.remove();
 };
 
 // this should be disabled in production, or stripped
-const getAll = async () => {
-  return await User.find();
-}
+const getAll = async () => User.find();
 
 module.exports = {
   getById,

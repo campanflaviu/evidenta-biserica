@@ -1,6 +1,5 @@
 const bcrypt = require('bcryptjs');
 const express = require('express');
-const User = require('../models/user');
 const authService = require('../services/authService');
 
 const router = express.Router();
@@ -30,12 +29,12 @@ router
 
     authService.register(req.body)
       .then(() => res.send('success'))
-      .catch(err => {
+      .catch((err) => {
         // email already exists
         if (err.code === 11000) {
           res.sendStatus(409);
         } else {
-          res.status(500).json({ err: err })
+          res.status(500).json({ err });
         }
       });
   });

@@ -1,5 +1,4 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const Relation = require('../models/relation');
 const Member = require('../models/member');
 const checkValidId = require('../utils/checkValidId');
@@ -39,13 +38,12 @@ router
         const otherPerson = await Member.findById(req.body.person);
         otherPerson.relations.push({
           relation,
-          isOwner: false
+          isOwner: false,
         });
         await otherPerson.save();
 
         res.sendStatus(204);
       } catch (e) {
-        console.error(e);
         res.status(500).json({ error: e.message });
       }
     } else {
@@ -72,7 +70,6 @@ router
   .delete(checkValidId, async (req, res) => {
     try {
       const resource = await Relation.findByIdAndDelete(req.params.id);
-      console.log(res);
       if (resource) {
         res.sendStatus(204);
       } else {
@@ -86,11 +83,12 @@ router
   // update a relation by id
   .patch(checkValidId, async (req, res) => {
     try {
-      const updatedRelation = await Relation.findByIdAndUpdate(req.params.id, req.body, { new: true });
+      const updatedRelation = await Relation.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+      });
       res.json(updatedRelation);
     } catch (e) {
-      console.error(e);
-      res.status(500).json({ error: e.message });      
+      res.status(500).json({ error: e.message });
     }
   });
 

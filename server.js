@@ -1,5 +1,6 @@
 // setup env config
 if (process.env.NODE_ENV !== 'production') {
+  // eslint-disable-next-line global-require
   require('dotenv').config();
 }
 
@@ -7,13 +8,11 @@ const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const chalk = require('chalk');
-const cors = require("cors");
-const unless = require('express-unless');
+const cors = require('cors');
+// const unless = require('express-unless');
 const swaggerUI = require('swagger-ui-express');
-// const swaggerJsDoc = require('swagger-jsdoc');
 
 const docs = require('./docs');
-const auth = require('./services/jwt');
 
 const churchesRouter = require('./routes/churches');
 const membersRouter = require('./routes/members');
@@ -26,34 +25,33 @@ const app = express();
 app.use(express.json());
 
 // cors setup
-const whitelist = [`http://localhost:${process.env.PORT || 5000}`]
+// TODO make sure this works on prod domain also
+const whitelist = [`http://localhost:${process.env.PORT || 5000}`];
 const corsOptions = {
-  origin: function (origin, callback) {
+  origin(origin, callback) {
     if (!origin || whitelist.indexOf(origin) !== -1) {
-      callback(null, true)
+      callback(null, true);
     } else {
-      callback(new Error("Not allowed by CORS"))
+      callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
-}
+};
 app.use(cors(corsOptions));
 
 // requests coloring
-const morganMiddleware = morgan((tokens, req, res) => {
-  return [
-      // '\n\n\n',
-      chalk.hex('#34ace0').bold(tokens.method(req, res)),
-      chalk.hex('#ffb142').bold(tokens.status(req, res)),
-      chalk.hex('#ff5252').bold(tokens.url(req, res)),
-      chalk.hex('#2ed573').bold(tokens['response-time'](req, res) + ' ms'),
-      chalk.hex('#f78fb3').bold('@ ' + tokens.date(req, res)),
-      chalk.yellow(tokens['remote-addr'](req, res)),
-      chalk.hex('#fffa65').bold('from ' + tokens.referrer(req, res)),
-      chalk.hex('#1e90ff')(tokens['user-agent'](req, res)),
-      // '\n\n\n',
-  ].join(' ');
-});
+const morganMiddleware = morgan((tokens, req, res) => [
+  // '\n\n\n',
+  chalk.hex('#34ace0').bold(tokens.method(req, res)),
+  chalk.hex('#ffb142').bold(tokens.status(req, res)),
+  chalk.hex('#ff5252').bold(tokens.url(req, res)),
+  chalk.hex('#2ed573').bold(`${tokens['response-time'](req, res)} ms`),
+  chalk.hex('#f78fb3').bold(`@ ${tokens.date(req, res)}`),
+  chalk.yellow(tokens['remote-addr'](req, res)),
+  chalk.hex('#fffa65').bold(`from ${tokens.referrer(req, res)}`),
+  chalk.hex('#1e90ff')(tokens['user-agent'](req, res)),
+  // '\n\n\n',
+].join(' '));
 app.use(morganMiddleware);
 
 // middlewarefor auth token requests - disabled until frontend sets up authorization
@@ -68,12 +66,11 @@ app.use(morganMiddleware);
 // mongo db connection
 mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true });
 const db = mongoose.connection;
-db.on('error', err => console.error(err));
+db.on('error', (err) => console.error(err));
 db.on('open', () => {
   console.log('connected to mongo');
-  console.log('ready...')
+  console.log('ready...');
 });
-
 
 // routing
 app.use('/churches', churchesRouter);
@@ -87,11 +84,10 @@ app.use('/relations', relationsRouter);
 //   await res.status(500).json({ error: err, req: req.data });
 // });
 
-
 // Swagger
-app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(docs));
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(docs));
 
 // start app on port
-const port = process.env.PORT || 5000
+const port = process.env.PORT || 5000;
 console.log(`started app on port ${port}`);
 app.listen(port);
