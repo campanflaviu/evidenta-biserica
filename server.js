@@ -9,7 +9,10 @@ const morgan = require('morgan');
 const chalk = require('chalk');
 const cors = require("cors");
 const unless = require('express-unless');
+const swaggerUI = require('swagger-ui-express');
+// const swaggerJsDoc = require('swagger-jsdoc');
 
+const docs = require('./docs');
 const auth = require('./services/jwt');
 
 const churchesRouter = require('./routes/churches');
@@ -23,7 +26,7 @@ const app = express();
 app.use(express.json());
 
 // cors setup
-const whitelist = ["http://localhost:3000"]
+const whitelist = [`http://localhost:${process.env.PORT || 5000}`]
 const corsOptions = {
   origin: function (origin, callback) {
     if (!origin || whitelist.indexOf(origin) !== -1) {
@@ -84,6 +87,9 @@ app.use('/relations', relationsRouter);
 //   await res.status(500).json({ error: err, req: req.data });
 // });
 
+
+// Swagger
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(docs));
 
 // start app on port
 const port = process.env.PORT || 5000
