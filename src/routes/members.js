@@ -42,21 +42,25 @@ router
   // get a member by id
   .get(checkValidId, async (req, res) => {
     try {
-      const member = await Member.findById(req.params.id).populate({
-        path: 'relations',
-        populate: {
-          path: 'relation',
-          model: 'Relation',
-          // select: '-owner' // exclude owner field (since we might have switched it)
-          // - not used since we use the owner for calculations
-          // I don't think this is needed since we already have the list on FE
-          // populate: {
-          //   path: 'owner',
-          //   select: 'firstName lastName',
-          //   model: 'Member'
-          // }
-        },
-      });
+      let member = await Member.findById(req.params.id);
+      // console.log('member', typeof member.relations[0]);
+      if (typeof member.relations[0] !== 'string') {
+        member = await member.populate({
+          path: 'relations',
+          populate: {
+            path: 'relation',
+            model: 'Relation',
+            // select: '-owner' // exclude owner field (since we might have switched it)
+            // - not used since we use the owner for calculations
+            // I don't think this is needed since we already have the list on FE
+            // populate: {
+            //   path: 'owner',
+            //   select: 'firstName lastName',
+            //   model: 'Member'
+            // }
+          },
+        });
+      }
       if (!member) {
         res.sendStatus(404);
       } else {
@@ -87,6 +91,7 @@ router
     try {
       // we should check if there is an image uploaded, so we should delete it after we replace it
       const member = await Member.findById(req.params.id);
+      console.log('relations', req.body.relations, req.body.relations.length);
       let memberData = req.body;
       if (req.file?.imagePath && req.file?.imageId) {
         await removeMedia(member.imageId);
