@@ -60,7 +60,7 @@ memberSchema.set('toJSON', {
     // remove relation owner - not needed on FE since it's tied to it's owner
     currentObj.relations = currentObj.relations.map((rel) => {
       let currentRel = rel;
-      delete currentRel.relation.owner;
+      delete currentRel.relation?.owner;
       currentRel = currentRel.relation;
       return currentRel;
     });
