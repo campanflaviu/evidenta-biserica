@@ -93,6 +93,9 @@ router
       const member = await Member.findById(req.params.id);
       console.log('relations', typeof req.body.relations, req.body.relations.length);
       let memberData = req.body;
+      if (typeof req.body.relations === 'string') {
+        delete memberData.relations;
+      }
       if (req.file?.imagePath && req.file?.imageId) {
         await removeMedia(member.imageId);
         memberData = {
