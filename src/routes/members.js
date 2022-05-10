@@ -91,15 +91,12 @@ router
     try {
       // we should check if there is an image uploaded, so we should delete it after we replace it
       const member = await Member.findById(req.params.id);
-      console.log('relations', typeof req.body.relations, req.body.relations.length);
-      let memberData = req.body;
-      if (typeof req.body.relations === 'string') {
-        delete memberData.relations;
-      }
+      let memberData = JSON.parse(req.body?.doc);
+
       if (req.file?.imagePath && req.file?.imageId) {
         await removeMedia(member.imageId);
         memberData = {
-          ...req.body,
+          ...memberData,
           imagePath: req.file.imagePath,
           imageId: req.file.imageId,
         };
