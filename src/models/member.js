@@ -25,7 +25,6 @@ const memberSchema = new mongoose.Schema({
   details: String,
   registerDate: Date,
   imagePath: String,
-  partner: String,
   civil: String,
   religious: String,
   weddingChurch: String,

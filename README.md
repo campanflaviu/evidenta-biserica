@@ -10,6 +10,7 @@
 - [Heroku](https://dashboard.heroku.com/apps/evidenta-biserica)
 
 - push to heroku: `git push heroku main`
+- see heroku logs: `heroku logs --tail`
 
 ## Database
 
