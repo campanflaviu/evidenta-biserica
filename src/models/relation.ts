@@ -17,7 +17,10 @@ const relationSchema = new mongoose.Schema({
     enum: ['husband', 'wife', 'child', 'parent'],
     required: true,
   },
-  startDate: Date,
+  civilWeddingDate: Date,
+  religiousWeddingDate: Date,
+  weddingChurch: String,
+  childBirthDate: Date,
   details: String,
 });
 
