@@ -1,4 +1,5 @@
-import express, { Request, Response } from 'express';
+/* eslint-disable no-console */
+import express from 'express';
 import swaggerUI from 'swagger-ui-express';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
@@ -6,19 +7,18 @@ import chalk from 'chalk';
 import cors from 'cors';
 // import unless from 'express-unless';
 
+import docs from './docs';
+import churchesRouter from './routes/churches';
+import membersRouter from './routes/members';
+import authRouter from './routes/auth';
+import usersRouter from './routes/users';
+import relationsRouter from './routes/relations';
+
 // setup env config
 if (process.env.NODE_ENV !== 'production') {
   // eslint-disable-next-line global-require
   require('dotenv').config();
 }
-
-const docs = require('./docs');
-
-const churchesRouter = require('./routes/churches');
-const membersRouter = require('./routes/members');
-const authRouter = require('./routes/auth');
-const usersRouter = require('./routes/users');
-const relationsRouter = require('./routes/relations');
 
 // setup express
 const app = express();
@@ -33,7 +33,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // requests coloring
-const morganMiddleware = morgan((tokens:any, req:Request, res:Response) => [
+const morganMiddleware = morgan((tokens, req, res) => [
   // '\n\n\n',
   chalk.hex('#34ace0').bold(tokens.method(req, res)),
   chalk.hex('#ffb142').bold(tokens.status(req, res)),

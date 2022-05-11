@@ -1,7 +1,7 @@
-const express = require('express');
-const Relation = require('../models/relation');
-const Member = require('../models/member');
-const checkValidId = require('../utils/checkValidId');
+import express from 'express';
+import Relation from '../models/relation';
+import Member from '../models/member';
+import checkValidId from '../utils/checkValidId';
 
 const router = express.Router();
 
@@ -13,7 +13,9 @@ router
       const relations = await Relation.find();
       res.json(relations);
     } catch (e) {
-      res.status(500).json({ error: e.message });
+      if (e instanceof Error) {
+        res.status(500).json({ error: e.message });
+      }
     }
   })
   // add a new relation
@@ -44,7 +46,9 @@ router
 
         res.sendStatus(204);
       } catch (e) {
-        res.status(500).json({ error: e.message });
+        if (e instanceof Error) {
+          res.status(500).json({ error: e.message });
+        }
       }
     } else {
       res.sendStatus(400); // bad request
@@ -63,7 +67,9 @@ router
         res.json(relation);
       }
     } catch (e) {
-      res.status(500).json({ error: e.message });
+      if (e instanceof Error) {
+        res.status(500).json({ error: e.message });
+      }
     }
   })
   // delete a relation by id
@@ -77,7 +83,9 @@ router
         res.sendStatus(404);
       }
     } catch (e) {
-      res.status(500).json({ error: e.message });
+      if (e instanceof Error) {
+        res.status(500).json({ error: e.message });
+      }
     }
   })
   // update a relation by id
@@ -88,8 +96,10 @@ router
       });
       res.json(updatedRelation);
     } catch (e) {
-      res.status(500).json({ error: e.message });
+      if (e instanceof Error) {
+        res.status(500).json({ error: e.message });
+      }
     }
   });
 
-module.exports = router;
+export default router;

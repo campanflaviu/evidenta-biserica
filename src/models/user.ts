@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle */
-const mongoose = require('mongoose');
-const role = require('./role');
+import mongoose from 'mongoose';
+import role from './role';
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -35,4 +35,5 @@ userSchema.set('toJSON', {
   },
 });
 
-module.exports = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema);
+export default User;

@@ -1,6 +1,6 @@
-const bcrypt = require('bcryptjs');
-const express = require('express');
-const authService = require('../services/authService');
+import bcrypt from 'bcryptjs';
+import express from 'express';
+import { login, register } from '../services/authService';
 
 const router = express.Router();
 
@@ -9,7 +9,7 @@ router
   .post(async (req, res) => {
     const { email, password } = req.body;
     try {
-      const user = await authService.login({ email, password });
+      const user = await login({ email, password });
       res.json(user);
     } catch (statusCode) {
       res.sendStatus(typeof statusCode === 'number' ? statusCode : 500);
@@ -27,7 +27,7 @@ router
     const salt = bcrypt.genSaltSync(10);
     req.body.password = bcrypt.hashSync(password, salt);
 
-    authService.register(req.body)
+    register(req.body)
       .then(() => res.send('success'))
       .catch((err) => {
         // email already exists
@@ -39,4 +39,4 @@ router
       });
   });
 
-module.exports = router;
+export default router;

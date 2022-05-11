@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const relationSchema = new mongoose.Schema({
   owner: {
@@ -32,4 +32,5 @@ relationSchema.set('toJSON', {
   },
 });
 
-module.exports = mongoose.model('Relation', relationSchema);
+const Relation = mongoose.model('Relation', relationSchema);
+export default Relation;

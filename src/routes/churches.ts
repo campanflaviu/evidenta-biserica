@@ -1,6 +1,6 @@
-const express = require('express');
-const Church = require('../models/church');
-const checkValidId = require('../utils/checkValidId');
+import express from 'express';
+import Church from '../models/church';
+import checkValidId from '../utils/checkValidId';
 
 const router = express.Router();
 
@@ -12,7 +12,9 @@ router
       const churches = await Church.find();
       res.json(churches);
     } catch (e) {
-      res.status(500).json({ error: e.message });
+      if (e instanceof Error) {
+        res.status(500).json({ error: e.message });
+      }
     }
   })
   // add a new church
@@ -27,7 +29,9 @@ router
         await church.save();
         res.sendStatus(204);
       } catch (e) {
-        res.status(500).json({ error: e.message });
+        if (e instanceof Error) {
+          res.status(500).json({ error: e.message });
+        }
       }
     } else {
       res.sendStatus(400); // bad request
@@ -46,7 +50,9 @@ router
         res.json(church);
       }
     } catch (e) {
-      res.status(500).json({ error: e.message });
+      if (e instanceof Error) {
+        res.status(500).json({ error: e.message });
+      }
     }
   })
   // delete a church by id
@@ -60,7 +66,9 @@ router
         res.sendStatus(404);
       }
     } catch (e) {
-      res.status(500).json({ error: e.message });
+      if (e instanceof Error) {
+        res.status(500).json({ error: e.message });
+      }
     }
   })
   // update a church by id
@@ -69,8 +77,10 @@ router
       const updatedChurch = await Church.findByIdAndUpdate(req.params.id, req.body, { new: true });
       res.json(updatedChurch);
     } catch (e) {
-      res.status(500).json({ error: e.message });
+      if (e instanceof Error) {
+        res.status(500).json({ error: e.message });
+      }
     }
   });
 
-module.exports = router;
+export default router;

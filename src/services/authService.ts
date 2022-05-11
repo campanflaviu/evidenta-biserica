@@ -1,13 +1,18 @@
-const bcrypt = require('bcryptjs');
-const User = require('../models/user');
-const auth = require('./jwt');
+import bcrypt from 'bcryptjs';
+import User from '../models/user';
+import { generateAccessToken } from './jwt';
 
-const login = async ({ email, password }) => {
+interface Credentials {
+  email: string,
+  password: string,
+}
+
+const login = async ({ email, password }: Credentials) => {
   const user = await User.findOne({ email });
 
   return new Promise((resolve, reject) => {
     if (user && bcrypt.compareSync(password, user.password)) {
-      const token = auth.generateAccessToken(email);
+      const token = generateAccessToken(email);
       resolve({ ...user.toJSON(), token });
     } else {
       // TODO fix this linting error
@@ -17,12 +22,12 @@ const login = async ({ email, password }) => {
   });
 };
 
-const register = async (params) => {
+const register = async (params: Credentials) => {
   const user = new User(params);
   return user.save();
 };
 
-module.exports = {
+export {
   login,
   register,
 };

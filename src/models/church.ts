@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const churchSchema = new mongoose.Schema({
   name: {
@@ -22,4 +22,5 @@ churchSchema.set('toJSON', {
   },
 });
 
-module.exports = mongoose.model('Church', churchSchema);
+const Church = mongoose.model('Church', churchSchema);
+export default Church;

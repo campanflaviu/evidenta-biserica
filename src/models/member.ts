@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const memberSchema = new mongoose.Schema({
   address: String,
@@ -63,7 +63,8 @@ memberSchema.set('toJSON', {
     delete currentObj.__v;
 
     // remove relation owner - not needed on FE since it's tied to it's owner
-    currentObj.relations = currentObj.relations.map((rel) => {
+    // TODO fix this type
+    currentObj.relations = currentObj.relations.map((rel: any) => {
       let currentRel = rel;
       delete currentRel.relation?.owner;
       currentRel = currentRel.relation;
@@ -74,4 +75,5 @@ memberSchema.set('toJSON', {
   },
 });
 
-module.exports = mongoose.model('Member', memberSchema);
+const Member = mongoose.model('Member', memberSchema);
+export default Member;

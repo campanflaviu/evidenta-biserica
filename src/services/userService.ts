@@ -1,11 +1,11 @@
-const User = require('../models/user');
+import User from '../models/user';
 
-const getById = async (id) => {
+const getById = async (id: string) => {
   const user = await User.findById(id);
   return user.toJSON();
 };
 
-const deleteById = async (id) => {
+const deleteById = async (id: string) => {
   const user = await User.findById(id);
   return user.remove();
 };
@@ -13,7 +13,7 @@ const deleteById = async (id) => {
 // this should be disabled in production, or stripped
 const getAll = async () => User.find();
 
-module.exports = {
+export {
   getById,
   deleteById,
   getAll,

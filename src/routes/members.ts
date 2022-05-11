@@ -1,10 +1,16 @@
-const express = require('express');
-const { uploadMedia, removeMedia } = require('../services/mediaService');
-const Member = require('../models/member');
-const checkValidId = require('../utils/checkValidId');
-const updateRelation = require('../utils/updateRelation');
+import express from 'express';
+
+import { uploadMedia, removeMedia } from '../services/mediaService';
+import Member from '../models/member';
+import checkValidId from '../utils/checkValidId';
+import updateRelation from '../utils/updateRelation';
 
 const router = express.Router();
+
+interface CloudinaryFile extends Express.Multer.File {
+  imagePath: string,
+  imageId: string,
+}
 
 router
   .route('/')
@@ -14,17 +20,20 @@ router
       const members = await Member.find();
       res.json(members);
     } catch (e) {
-      res.status(500).json({ error: e.message });
+      if (e instanceof Error) {
+        res.status(500).json({ error: e.message });
+      }
     }
   })
   // add a new memmber
   .post(uploadMedia.single('profileImage'), async (req, res) => {
     try {
       if (req.body.firstName?.length && req.body.lastName?.length) {
+        const file = req.file as CloudinaryFile;
         const member = new Member({
           ...req.body,
-          imagePath: req.file?.imagePath || null,
-          imageId: req.file?.imageId || null,
+          imagePath: file?.imagePath || null,
+          imageId: file?.imageId || null,
         });
         const newMember = await member.save();
         // eslint-disable-next-line no-underscore-dangle
@@ -33,7 +42,9 @@ router
         res.sendStatus(400);
       }
     } catch (e) {
-      res.status(500).json({ error: e.message });
+      if (e instanceof Error) {
+        res.status(500).json({ error: e.message });
+      }
     }
   });
 
@@ -69,7 +80,9 @@ router
         res.json(member);
       }
     } catch (e) {
-      res.status(500).json({ error: e.message });
+      if (e instanceof Error) {
+        res.status(500).json({ error: e.message });
+      }
     }
   })
   // delete a member by id
@@ -83,7 +96,9 @@ router
       await member.remove();
       res.sendStatus(204);
     } catch (e) {
-      res.json({ error: e.message });
+      if (e instanceof Error) {
+        res.json({ error: e.message });
+      }
     }
   })
   // update a memmber by id
@@ -93,12 +108,13 @@ router
       const member = await Member.findById(req.params.id);
       let memberData = JSON.parse(req.body?.doc);
 
-      if (req.file?.imagePath && req.file?.imageId) {
+      const file = req.file as CloudinaryFile;
+      if (file?.imagePath && file?.imageId) {
         await removeMedia(member.imageId);
         memberData = {
           ...memberData,
-          imagePath: req.file.imagePath,
-          imageId: req.file.imageId,
+          imagePath: file.imagePath,
+          imageId: file.imageId,
         };
       }
 
@@ -107,8 +123,10 @@ router
       });
       res.json(updatedMember);
     } catch (e) {
-      res.json({ error: e.message });
+      if (e instanceof Error) {
+        res.json({ error: e.message });
+      }
     }
   });
 
-module.exports = router;
+export default router;

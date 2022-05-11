@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 // available roles should be: admin, user, member
 const roleSchema = new mongoose.Schema({
@@ -8,4 +8,5 @@ const roleSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('Role', roleSchema);
+const Role = mongoose.model('Role', roleSchema);
+export default Role;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 function CloudinaryStorage(opts) {
   this.cloudinary = opts.cloudinary || null;
   this.uploadOptions = opts.uploadOptions || {};
