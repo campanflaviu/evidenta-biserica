@@ -59,12 +59,15 @@ memberSchema.set('toJSON', {
 
     // remove relation owner - not needed on FE since it's tied to it's owner
     // TODO fix this type
-    currentObj.relations = currentObj.relations.map((rel: any) => {
-      let currentRel = rel;
-      delete currentRel.relation?.owner;
-      currentRel = currentRel.relation;
-      return currentRel;
-    });
+    currentObj.relations = currentObj.relations
+      // remove any empty relations, but we should avoid this from happening though
+      .filter((rel: any) => rel.relation)
+      .map((rel: any) => {
+        let currentRel = rel;
+        delete currentRel.relation?.owner;
+        currentRel = currentRel.relation;
+        return currentRel;
+      });
 
     return currentObj;
   },
