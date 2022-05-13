@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import User from '../models/user';
+import UserModel from '../models/user';
 import { generateAccessToken } from './jwt';
 
 interface Credentials {
@@ -8,7 +8,7 @@ interface Credentials {
 }
 
 const login = async ({ email, password }: Credentials) => {
-  const user = await User.findOne({ email });
+  const user = await UserModel.findOne({ email });
 
   return new Promise((resolve, reject) => {
     if (user && bcrypt.compareSync(password, user.password)) {
@@ -23,7 +23,7 @@ const login = async ({ email, password }: Credentials) => {
 };
 
 const register = async (params: Credentials) => {
-  const user = new User(params);
+  const user = new UserModel(params);
   return user.save();
 };
 

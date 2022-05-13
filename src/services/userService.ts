@@ -1,17 +1,17 @@
-import User from '../models/user';
+import UserModel from '../models/user';
 
 const getById = async (id: string) => {
-  const user = await User.findById(id);
+  const user = await UserModel.findById(id);
   return user.toJSON();
 };
 
 const deleteById = async (id: string) => {
-  const user = await User.findById(id);
+  const user = await UserModel.findById(id);
   return user.remove();
 };
 
 // this should be disabled in production, or stripped
-const getAll = async () => User.find();
+const getAll = async () => UserModel.find();
 
 export {
   getById,
