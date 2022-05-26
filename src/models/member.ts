@@ -33,6 +33,7 @@ const memberSchema = new mongoose.Schema({
   hsBaptiseDate: Date,
   hsBaptisePlace: String,
   memberDate: Date,
+  observations: String,
   relations: [{
     relation: {
       type: mongoose.Schema.Types.ObjectId,
