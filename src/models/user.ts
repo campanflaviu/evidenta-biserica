@@ -1,6 +1,13 @@
 /* eslint-disable no-underscore-dangle */
 import mongoose from 'mongoose';
-import role from './role';
+import { Role } from './role';
+
+export interface User {
+  email: string;
+  password: string;
+  roles: Role[],
+  created: Date
+}
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -14,7 +21,7 @@ const userSchema = new mongoose.Schema({
   },
   roles: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: role,
+    ref: 'Role',
   }],
   created: {
     type: Date,
@@ -35,5 +42,4 @@ userSchema.set('toJSON', {
   },
 });
 
-const User = mongoose.model('User', userSchema);
-export default User;
+export default mongoose.model('User', userSchema);

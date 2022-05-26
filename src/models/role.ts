@@ -1,5 +1,9 @@
 import mongoose from 'mongoose';
 
+export interface Role {
+  name: String
+}
+
 // available roles should be: admin, user, member
 const roleSchema = new mongoose.Schema({
   name: {
@@ -8,5 +12,4 @@ const roleSchema = new mongoose.Schema({
   },
 });
 
-const Role = mongoose.model('Role', roleSchema);
-export default Role;
+export default mongoose.model('Role', roleSchema);

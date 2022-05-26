@@ -6,6 +6,7 @@ import morgan from 'morgan';
 import chalk from 'chalk';
 import cors from 'cors';
 // import unless from 'express-unless';
+import compression from 'compression';
 
 import docs from './docs';
 import churchesRouter from './routes/churches';
@@ -22,6 +23,15 @@ if (process.env.NODE_ENV !== 'production') {
 
 // setup express
 const app = express();
+
+const shouldCompress = () => true;
+
+// setup compression
+// TODO test if this makes a difference
+app.use(compression({
+  filter: shouldCompress,
+}));
+
 app.use(express.json());
 
 // cors setup

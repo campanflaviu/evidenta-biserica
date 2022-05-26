@@ -106,7 +106,8 @@ router
     try {
       // we should check if there is an image uploaded, so we should delete it after we replace it
       const member = await Member.findById(req.params.id);
-      let memberData = JSON.parse(req.body?.doc);
+      // if an image is sent, then the body should be in the doc obj
+      let memberData = req.body?.doc ? JSON.parse(req.body?.doc) : req.body;
 
       const file = req.file as CloudinaryFile;
       if (file?.imagePath && file?.imageId) {

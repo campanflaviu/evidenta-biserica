@@ -1,5 +1,16 @@
 /* eslint-disable no-underscore-dangle */
 import mongoose from 'mongoose';
+import { User } from './user';
+
+export interface Relation {
+  owner: User;
+  person: User;
+  type: 'husband' | 'wife' | 'child' | 'parent';
+  civilWeddingDate: Date;
+  weddingChurch: string;
+  childBirthDate: Date;
+  details: string;
+}
 
 const relationSchema = new mongoose.Schema({
   owner: {
@@ -35,5 +46,4 @@ relationSchema.set('toJSON', {
   },
 });
 
-const Relation = mongoose.model('Relation', relationSchema);
-export default Relation;
+export default mongoose.model('Relation', relationSchema);

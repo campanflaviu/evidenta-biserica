@@ -1,7 +1,7 @@
 import express from 'express';
-import Relation from '../models/relation';
-import Member from '../models/member';
+import RelationModel from '../models/relation';
 import checkValidId from '../utils/checkValidId';
+import { addNewRelation, deleteRelationById, updateRelationById } from '../services/relationService';
 
 const router = express.Router();
 
@@ -10,7 +10,7 @@ router
   // get all relations (I don't think we need this in prod)
   .get(async (req, res) => {
     try {
-      const relations = await Relation.find();
+      const relations = await RelationModel.find();
       res.json(relations);
     } catch (e) {
       if (e instanceof Error) {
@@ -25,25 +25,7 @@ router
     if (req.body.owner?.length && req.body.person?.length && req.body.type?.length) {
       try {
         // save relation
-        const relation = new Relation(req.body);
-        await relation.save();
-
-        // add relation to owner
-        const owner = await Member.findById({ _id: req.body.owner });
-        owner.relations.push({
-          relation,
-          isOwner: true,
-        });
-        await owner.save();
-
-        // add relation to other person
-        const otherPerson = await Member.findById(req.body.person);
-        otherPerson.relations.push({
-          relation,
-          isOwner: false,
-        });
-        await otherPerson.save();
-
+        await addNewRelation(req.body);
         res.sendStatus(204);
       } catch (e) {
         if (e instanceof Error) {
@@ -60,7 +42,7 @@ router
   // get a relation by id
   .get(checkValidId, async (req, res) => {
     try {
-      const relation = await Relation.findById(req.params.id);
+      const relation = await RelationModel.findById(req.params.id);
       if (!relation) {
         res.sendStatus(404);
       } else {
@@ -75,8 +57,8 @@ router
   // delete a relation by id
   .delete(checkValidId, async (req, res) => {
     try {
-      const resource = await Relation.findByIdAndDelete(req.params.id);
-      if (resource) {
+      const response = await deleteRelationById(req.params.id);
+      if (response) {
         res.sendStatus(204);
       } else {
         // already deleted
@@ -91,9 +73,7 @@ router
   // update a relation by id
   .patch(checkValidId, async (req, res) => {
     try {
-      const updatedRelation = await Relation.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
-      });
+      const updatedRelation = updateRelationById(req.params?.id, req.body);
       res.json(updatedRelation);
     } catch (e) {
       if (e instanceof Error) {
