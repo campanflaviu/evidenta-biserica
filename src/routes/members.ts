@@ -1,7 +1,9 @@
 import express from 'express';
 
 import { uploadMedia, removeMedia } from '../services/mediaService';
-import Member from '../models/member';
+import { addNewMember, updateMemberById } from '../services/memberService';
+import { updateMemberRelations } from '../services/relationService';
+import MemberModel, { MemberImage } from '../models/member';
 import checkValidId from '../utils/checkValidId';
 import updateRelation from '../utils/updateRelation';
 
@@ -17,7 +19,7 @@ router
   // get all members
   .get(async (req, res) => {
     try {
-      const members = await Member.find();
+      const members = await MemberModel.find();
       res.json(members);
     } catch (e) {
       if (e instanceof Error) {
@@ -28,16 +30,9 @@ router
   // add a new memmber
   .post(uploadMedia.single('profileImage'), async (req, res) => {
     try {
-      if (req.body.firstName?.length && req.body.lastName?.length) {
-        const file = req.file as CloudinaryFile;
-        const member = new Member({
-          ...req.body,
-          imagePath: file?.imagePath || null,
-          imageId: file?.imageId || null,
-        });
-        const newMember = await member.save();
-        // eslint-disable-next-line no-underscore-dangle
-        res.status(200).json({ ...newMember?._doc });
+      const member = await addNewMember(req.body, req.file as MemberImage);
+      if (member) {
+        res.status(200).json({ ...member?._doc });
       } else {
         res.sendStatus(400);
       }
@@ -53,7 +48,7 @@ router
   // get a member by id
   .get(checkValidId, async (req, res) => {
     try {
-      let member = await Member.findById(req.params.id);
+      let member = await MemberModel.findById(req.params.id);
       // console.log('member', typeof member.relations[0]);
       if (typeof member.relations[0] !== 'string') {
         member = await member.populate({
@@ -88,7 +83,7 @@ router
   // delete a member by id
   .delete(checkValidId, async (req, res) => {
     try {
-      const member = await Member.findById(req.params.id);
+      const member = await MemberModel.findById(req.params.id);
       // remove cloudinary reference if present
       if (member.imageId) {
         await removeMedia(member.imageId);
@@ -104,25 +99,21 @@ router
   // update a memmber by id
   .patch(checkValidId, uploadMedia.single('profileImage'), async (req, res) => {
     try {
-      // we should check if there is an image uploaded, so we should delete it after we replace it
-      const member = await Member.findById(req.params.id);
       // if an image is sent, then the body should be in the doc obj
-      let memberData = req.body?.doc ? JSON.parse(req.body?.doc) : req.body;
+      const memberData = req.body?.doc ? JSON.parse(req.body?.doc) : req.body;
+      const { relations, ...memberWithoutRelations } = memberData;
 
-      const file = req.file as CloudinaryFile;
-      if (file?.imagePath && file?.imageId) {
-        await removeMedia(member.imageId);
-        memberData = {
-          ...memberData,
-          imagePath: file.imagePath,
-          imageId: file.imageId,
-        };
-      }
+      // console.log('relations', relations);
+      // console.log('member', memberWithoutRelations);
+      const updateStatuses = await updateMemberRelations(req.params.id, relations);
+      // console.log('update statuses', updateStatuses);
 
-      const updatedMember = await Member.findByIdAndUpdate(req.params.id, memberData, {
-        new: true,
-      });
-      res.json(updatedMember);
+      const updatedMember = await updateMemberById(
+        req.params.id,
+        memberWithoutRelations,
+        req.file as CloudinaryFile,
+      );
+      res.json({ ...updatedMember, relationStatuses: updateStatuses });
     } catch (e) {
       if (e instanceof Error) {
         res.json({ error: e.message });

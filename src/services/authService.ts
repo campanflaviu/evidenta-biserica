@@ -7,7 +7,7 @@ interface Credentials {
   password: string,
 }
 
-const login = async ({ email, password }: Credentials) => {
+export const login = async ({ email, password }: Credentials) => {
   const user = await UserModel.findOne({ email });
 
   return new Promise((resolve, reject) => {
@@ -22,12 +22,7 @@ const login = async ({ email, password }: Credentials) => {
   });
 };
 
-const register = async (params: Credentials) => {
+export const register = async (params: Credentials) => {
   const user = new UserModel(params);
   return user.save();
-};
-
-export {
-  login,
-  register,
 };

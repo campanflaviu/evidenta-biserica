@@ -1,11 +1,12 @@
 /* eslint-disable no-underscore-dangle */
 import mongoose from 'mongoose';
-import { User } from './user';
+// import { User } from './user';
 
+export type RelationType = 'husband' | 'wife' | 'child' | 'parent';
 export interface Relation {
-  owner: User;
-  person: User;
-  type: 'husband' | 'wife' | 'child' | 'parent';
+  owner: string;
+  person: string;
+  type: RelationType;
   civilWeddingDate: Date;
   weddingChurch: string;
   childBirthDate: Date;

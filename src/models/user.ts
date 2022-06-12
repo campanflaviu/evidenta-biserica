@@ -9,6 +9,15 @@ export interface User {
   created: Date
 }
 
+export interface UserRelation {
+  person: string;
+  type: 'husband' | 'wife' | 'child' | 'parent';
+  civilWeddingDate: Date;
+  weddingChurch: string;
+  childBirthDate: Date;
+  details: string;
+}
+
 const userSchema = new mongoose.Schema({
   email: {
     type: String,

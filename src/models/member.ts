@@ -1,5 +1,46 @@
 /* eslint-disable no-underscore-dangle */
 import mongoose from 'mongoose';
+import { Relation } from './relation';
+
+export interface MemberRelation {
+  relation: Relation;
+  isOwner: boolean;
+}
+
+export interface MemberImage extends Express.Multer.File {
+  imagePath: string;
+  imageId: string;
+}
+
+export interface Member {
+  address: string;
+  firstName: string;
+  lastName: string;
+  maidenName: string;
+  fatherName: string;
+  motherName: string;
+  birthDate: Date;
+  placeOfBirth: string;
+  cnp: string;
+  sex: Boolean;
+  homePhone: string;
+  mobilePhone: string;
+  email: string;
+  deathDate: Date;
+  details: string;
+  registerDate: Date;
+  imagePath: string;
+  imageId: string;
+  blessingDate: Date;
+  blessingPlace: string;
+  baptiseDate: Date;
+  baptisePlace: string;
+  hsBaptiseDate: Date;
+  hsBaptisePlace: string;
+  memberDate: Date;
+  relations: MemberRelation[];
+  church: string;
+}
 
 const memberSchema = new mongoose.Schema({
   address: String,
@@ -73,5 +114,4 @@ memberSchema.set('toJSON', {
   },
 });
 
-const Member = mongoose.model('Member', memberSchema);
-export default Member;
+export default mongoose.model('Member', memberSchema);

@@ -1,4 +1,6 @@
-const updateRelation = (rel) => {
+import { MemberRelation } from '../models/member';
+
+const updateRelation = (rel: MemberRelation) => {
   const current = rel;
   // no change, exit
   if (current.isOwner) {
@@ -22,4 +24,4 @@ const updateRelation = (rel) => {
   return current;
 };
 
-module.exports = updateRelation;
+export default updateRelation;
