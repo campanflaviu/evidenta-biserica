@@ -26,7 +26,7 @@ router
       try {
         // save relation
         await addNewRelation(req.body);
-        res.sendStatus(204);
+        res.sendStatus(201);
       } catch (e) {
         if (e instanceof Error) {
           res.status(500).json({ error: e.message });

@@ -14,6 +14,7 @@ import membersRouter from './routes/members';
 import authRouter from './routes/auth';
 import usersRouter from './routes/users';
 import relationsRouter from './routes/relations';
+import specialCasesRouter from './routes/specialCases';
 
 // setup env config
 if (process.env.NODE_ENV !== 'production') {
@@ -81,6 +82,7 @@ app.use('/members', membersRouter);
 app.use('/auth', authRouter);
 app.use('/users', usersRouter);
 app.use('/relations', relationsRouter);
+app.use('/special-cases', specialCasesRouter);
 
 // generic error handling - should be enabled in production
 // app.use(async (err, req, res, next) => {
