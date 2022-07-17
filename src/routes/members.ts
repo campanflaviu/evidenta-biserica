@@ -19,7 +19,18 @@ router
   // get all members
   .get(async (req, res) => {
     try {
-      const members = await MemberModel.find();
+      const members = await MemberModel.find().populate({
+        path: 'relations',
+        populate: {
+          path: 'relation',
+          model: 'Relation',
+          populate: {
+            path: 'person',
+          },
+        },
+      });
+      // if (typeof member.relations[0] !== 'string') {
+      // };
       res.json(members);
     } catch (e) {
       if (e instanceof Error) {
@@ -59,11 +70,17 @@ router
             // select: '-owner' // exclude owner field (since we might have switched it)
             // - not used since we use the owner for calculations
             // I don't think this is needed since we already have the list on FE
-            // populate: {
-            //   path: 'owner',
-            //   select: 'firstName lastName',
-            //   model: 'Member'
-            // }
+            populate: {
+              path: 'person',
+              // ['_id', 'name']
+              // select: 'firstName',
+              // select: {
+              //   _id: 1,
+              // firstName: 1,
+              // lastName: 1,
+              // },
+              // model: 'Member',
+            },
           },
         });
       }
