@@ -38,6 +38,7 @@ export interface Member {
   hsBaptiseDate: Date;
   hsBaptisePlace: string;
   memberDate: Date;
+  leaveDate: Date;
   relations: MemberRelation[];
   church: string;
 }
@@ -74,6 +75,7 @@ const memberSchema = new mongoose.Schema({
   hsBaptiseDate: Date,
   hsBaptisePlace: String,
   memberDate: Date,
+  leaveDate: Date,
   observations: String,
   relations: [{
     relation: {
