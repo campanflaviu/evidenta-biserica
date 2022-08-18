@@ -82,7 +82,7 @@ router
               // model: 'Member',
             },
           },
-        }).populate('transfers');
+        });
       }
       if (!member) {
         res.sendStatus(404);
