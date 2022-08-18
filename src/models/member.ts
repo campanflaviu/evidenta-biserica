@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import mongoose from 'mongoose';
 import { Relation } from './relation';
+import { Transfer } from './transfers';
 
 export interface MemberRelation {
   relation: Relation;
@@ -40,6 +41,7 @@ export interface Member {
   memberDate: Date;
   leaveDate: Date;
   relations: MemberRelation[];
+  transfers: Transfer[];
   church: string;
 }
 
@@ -87,6 +89,11 @@ const memberSchema = new mongoose.Schema({
       type: Boolean,
       default: true,
     },
+  }],
+  transfers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Transfer',
+    required: true,
   }],
   church: {
     type: mongoose.Schema.Types.ObjectId,

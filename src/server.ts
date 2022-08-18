@@ -14,6 +14,7 @@ import membersRouter from './routes/members';
 import authRouter from './routes/auth';
 import usersRouter from './routes/users';
 import relationsRouter from './routes/relations';
+import transfersRouter from './routes/transfers';
 import specialCasesRouter from './routes/specialCases';
 
 // setup env config
@@ -82,6 +83,7 @@ app.use('/members', membersRouter);
 app.use('/auth', authRouter);
 app.use('/users', usersRouter);
 app.use('/relations', relationsRouter);
+app.use('/transfers', transfersRouter);
 app.use('/special-cases', specialCasesRouter);
 
 // generic error handling - should be enabled in production

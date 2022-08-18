@@ -28,7 +28,7 @@ router
             path: 'person',
           },
         },
-      });
+      }).populate('transfers');
       // if (typeof member.relations[0] !== 'string') {
       // };
       res.json(members);
@@ -82,7 +82,7 @@ router
               // model: 'Member',
             },
           },
-        });
+        }).populate('transfers');
       }
       if (!member) {
         res.sendStatus(404);
