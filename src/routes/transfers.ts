@@ -10,7 +10,10 @@ router
   // get all transfers (I don't think we need this in prod)
   .get(async (req, res) => {
     try {
-      const transfers = await TransferModel.find();
+      const transfers = await TransferModel.find().populate({
+        path: 'owner',
+        // TODO send only firstName and lastName
+      });
       res.json(transfers);
     } catch (e) {
       if (e instanceof Error) {
