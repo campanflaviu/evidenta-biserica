@@ -36,6 +36,7 @@ export interface Member {
   blessingPlace: string;
   baptiseDate: Date;
   baptisePlace: string;
+  baptisedBy: string;
   hsBaptiseDate: Date;
   hsBaptisePlace: string;
   memberDate: Date;
@@ -74,6 +75,7 @@ const memberSchema = new mongoose.Schema({
   blessingPlace: String,
   baptiseDate: Date,
   baptisePlace: String,
+  baptisedBy: String,
   hsBaptiseDate: Date,
   hsBaptisePlace: String,
   memberDate: Date,
