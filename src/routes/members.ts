@@ -62,7 +62,7 @@ router
       let member = await MemberModel.findById(req.params.id);
       // console.log('member', typeof member.relations[0]);
       if (typeof member.relations[0] !== 'string') {
-        member = await member.populate({
+        member = await member.populate([{
           path: 'relations',
           populate: {
             path: 'relation',
@@ -82,7 +82,10 @@ router
               // model: 'Member',
             },
           },
-        });
+        }, {
+          path: 'transfers',
+          model: 'Transfer',
+        }]);
       }
       if (!member) {
         res.sendStatus(404);
