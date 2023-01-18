@@ -111,13 +111,17 @@ const updateMemberRelations = (ownerId, relations) => __awaiter(void 0, void 0, 
         yield promise;
         // check if the person has a relation already
         const relationTypeValid = yield (0, isRelationTypeValid_1.default)(relation.type, ownerId, relation.person);
-        const existingRelationsPerson = yield relation_1.default.find({
-            person: relation.person, type: relation.type,
-        });
-        const existingRelationsOwner = yield relation_1.default.find({
-            owner: relation.person,
-            type: (0, getRelationTypeComplement_1.default)(relation.type),
-        });
+        let existingRelationsSpousePerson = [];
+        let existingRelationsSpouseOwner = [];
+        if (relation.type !== 'child' && relation.type !== 'parent') {
+            existingRelationsSpousePerson = yield relation_1.default.find({
+                person: relation.person, type: relation.type,
+            });
+            existingRelationsSpouseOwner = yield relation_1.default.find({
+                owner: relation.person,
+                type: (0, getRelationTypeComplement_1.default)(relation.type),
+            });
+        }
         if (!relationTypeValid) {
             updateStatuses.push({
                 status: 'error',
@@ -125,28 +129,28 @@ const updateMemberRelations = (ownerId, relations) => __awaiter(void 0, void 0, 
                 error: 'Invalid relation type',
             });
         }
-        else if (existingRelationsPerson.length
-            && existingRelationsPerson[0].owner.equals(ownerId)
-            && existingRelationsPerson[0].type === relation.type) {
+        else if (existingRelationsSpousePerson.length
+            && existingRelationsSpousePerson[0].owner.equals(ownerId)
+            && existingRelationsSpousePerson[0].type === relation.type) {
             // existing relation, we should update it
-            const updatedRelation = yield (0, exports.updateRelationById)(existingRelationsPerson[0]._id, Object.assign({ owner: ownerId }, relation));
+            const updatedRelation = yield (0, exports.updateRelationById)(existingRelationsSpousePerson[0]._id, Object.assign({ owner: ownerId }, relation));
             updateStatuses.push({
                 status: 'success',
                 relation: updatedRelation,
             });
         }
-        else if (existingRelationsPerson.length) {
+        else if (existingRelationsSpousePerson.length) {
             updateStatuses.push({
                 status: 'error',
-                relation: existingRelationsPerson[0],
-                error: 'Person already has relation',
+                relation: existingRelationsSpousePerson[0],
+                error: 'Person already has relation - person',
             });
         }
-        else if (existingRelationsOwner.length) {
+        else if (existingRelationsSpouseOwner.length) {
             updateStatuses.push({
                 status: 'error',
-                relation: existingRelationsOwner[0],
-                error: 'Person already has relation',
+                relation: existingRelationsSpouseOwner[0],
+                error: 'Person already has relation - owner',
             });
         }
         else {

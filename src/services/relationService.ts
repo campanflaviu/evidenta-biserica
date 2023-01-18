@@ -129,14 +129,18 @@ export const updateMemberRelations = async (
 
     // check if the person has a relation already
     const relationTypeValid = await isRelationTypeValid(relation.type, ownerId, relation.person);
+    let existingRelationsSpousePerson = [];
+    let existingRelationsSpouseOwner = [];
 
-    const existingRelationsPerson = await RelationModel.find({
-      person: relation.person, type: relation.type,
-    });
-    const existingRelationsOwner = await RelationModel.find({
-      owner: relation.person,
-      type: getRelationTypeComplement(relation.type),
-    });
+    if (relation.type !== 'child' && relation.type !== 'parent') {
+      existingRelationsSpousePerson = await RelationModel.find({
+        person: relation.person, type: relation.type,
+      });
+      existingRelationsSpouseOwner = await RelationModel.find({
+        owner: relation.person,
+        type: getRelationTypeComplement(relation.type),
+      });
+    }
 
     if (!relationTypeValid) {
       updateStatuses.push({
@@ -145,30 +149,30 @@ export const updateMemberRelations = async (
         error: 'Invalid relation type',
       });
     } else if (
-      existingRelationsPerson.length
-      && existingRelationsPerson[0].owner.equals(ownerId)
-      && existingRelationsPerson[0].type === relation.type
+      existingRelationsSpousePerson.length
+      && existingRelationsSpousePerson[0].owner.equals(ownerId)
+      && existingRelationsSpousePerson[0].type === relation.type
     ) {
       // existing relation, we should update it
       const updatedRelation = await updateRelationById(
-        existingRelationsPerson[0]._id,
+        existingRelationsSpousePerson[0]._id,
         { owner: ownerId, ...relation },
       );
       updateStatuses.push({
         status: 'success',
         relation: updatedRelation,
       });
-    } else if (existingRelationsPerson.length) {
+    } else if (existingRelationsSpousePerson.length) {
       updateStatuses.push({
         status: 'error',
-        relation: existingRelationsPerson[0],
-        error: 'Person already has relation',
+        relation: existingRelationsSpousePerson[0],
+        error: 'Person already has relation - person',
       });
-    } else if (existingRelationsOwner.length) {
+    } else if (existingRelationsSpouseOwner.length) {
       updateStatuses.push({
         status: 'error',
-        relation: existingRelationsOwner[0],
-        error: 'Person already has relation',
+        relation: existingRelationsSpouseOwner[0],
+        error: 'Person already has relation - owner',
       });
     } else {
       // new relation, we should save it
